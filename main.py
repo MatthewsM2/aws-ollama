@@ -13,14 +13,14 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Explicitly allow localhost:3000
-    #allow_credentials=True,
+    allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
 
 def verify_api(x_api_key: str = Header(None)):
-    if not x_api_key or x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid Api request,")
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API request")
     return x_api_key
 
 @app.post("/generate")
