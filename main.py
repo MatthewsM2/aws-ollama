@@ -24,7 +24,10 @@ def verify_api(x_api_key: str = Header(None)):
     return x_api_key
 
 @app.post("/generate")
-def generate(prompt: str, x_api_key: str = Depends(verify_api)):
+def generate(request: dict, x_api_key: str = Depends(verify_api)):
+    prompt = request.get("prompt", "")
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Prompt is required")
     response = ollama.chat(model="tinyllama", messages=[{"role": "user", "content": prompt}])
     return {"response": response["message"]["content"]}
 
