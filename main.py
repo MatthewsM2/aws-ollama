@@ -9,24 +9,22 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 app = FastAPI()
 
-# Add CORS middleware to allow all requests
+# Add CORS middleware to allow requests from localhost:3000
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],  
+    allow_origins=["*"],  # Explicitly allow localhost:3000
+    #allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
 )
 
 def verify_api(x_api_key: str = Header(None)):
-    #print(API_KEY)
-    #print(x_api_key)
     if not x_api_key or x_api_key != API_KEY:
-        raise HTTPException(status_code=401,detail="Invalid Api request,")
+        raise HTTPException(status_code=401, detail="Invalid Api request,")
     return x_api_key
 
-
 @app.post("/generate")
-def generate(prompt: str, x_api_key:str = Depends(verify_api)):
-    response = ollama.chat(model="tinyllama", messages=[{"role":"user","content":prompt}])
+def generate(prompt: str, x_api_key: str = Depends(verify_api)):
+    response = ollama.chat(model="tinyllama", messages=[{"role": "user", "content": prompt}])
     return {"response": response["message"]["content"]}
+
